@@ -71,6 +71,9 @@ const convertTodoTable = (obj) => {
 };
 
 // const checkInvalidValues = (request, response, next) => {
+//   const validPriority = ["HIGH", "MEDIUM", "LOW"];
+//   const validStatus = ["TO DO", "IN PROGRESS", "DONE"];
+//   const validCategory = ["WORK", "HOME", "LEARNING"];
 //   const requestQuery = request.query;
 //   const {
 //     priority = "HIGH",
@@ -98,19 +101,19 @@ const convertTodoTable = (obj) => {
 
 //   next();
 // };
-let checkPriority = (priority) => {
+const checkPriority = (priority) => {
   const validPriority = ["HIGH", "MEDIUM", "LOW"];
   const isPriorityValid = validPriority.includes(priority);
   return isPriorityValid;
 };
 
-let checkStatus = (status) => {
+const checkStatus = (status) => {
   const validStatus = ["TO DO", "IN PROGRESS", "DONE"];
   const isStatusValid = validStatus.includes(status);
   return isStatusValid;
 };
 
-let checkCategory = (category) => {
+const checkCategory = (category) => {
   const validCategory = ["WORK", "HOME", "LEARNING"];
   const isCategoryValid = validCategory.includes(category);
   return isCategoryValid;
@@ -262,35 +265,17 @@ app.get("/agenda/", async (request, response) => {
   }
 });
 
-const isCheckPriority = (priority) => {
-  const validPriority = ["HIGH", "MEDIUM", "LOW"];
-  const isPriorityValid = validPriority.includes(priority);
-  return isPriorityValid;
-};
-
-const isCheckStatus = (status) => {
-  const validStatus = ["TO DO", "IN PROGRESS", "DONE"];
-  const isStatusValid = validStatus.includes(status);
-  return isStatusValid;
-};
-
-const isCheckCategory = (category) => {
-  const validCategory = ["WORK", "HOME", "LEARNING"];
-  const isCategoryValid = validCategory.includes(category);
-  return isCategoryValid;
-};
-
 app.post("/todos/", async (request, response) => {
   const { id, todo, priority, status, category, dueDate } = request.body;
-  if (isCheckStatus(status) === false) {
+  if (checkStatus(status) === false) {
     response.status(400);
     response.send("Invalid Todo Status");
   }
-  if (isCheckCategory(category) === false) {
+  if (checkCategory(category) === false) {
     response.status(400);
     response.send("Invalid Todo Category");
   }
-  if (isCheckPriority(priority) === false) {
+  if (checkPriority(priority) === false) {
     response.status(400);
     response.send("Invalid Todo Priority");
   }
@@ -317,18 +302,34 @@ app.put("/todos/:todoId", async (request, response) => {
 
   switch (true) {
     case requestBody.status !== undefined:
+      if (checkStatus(requestQuery.status) === false) {
+        response.status(400);
+        response.send("Invalid Todo Status");
+      }
       updatedKey = "Status";
       break;
     case requestBody.priority !== undefined:
+      if (checkPriority(requestQuery.priority) === false) {
+        response.status(400);
+        response.send("Invalid Todo Priority");
+      }
       updatedKey = "Priority";
       break;
     case requestBody.todo !== undefined:
       updatedKey = "Todo";
       break;
     case requestBody.category !== undefined:
+      if (checkCategory(requestQuery.category) === false) {
+        response.status(400);
+        response.send("Invalid Todo Category");
+      }
       updatedKey = "Category";
       break;
     case request.dueDate !== undefined:
+      if (isValid(new Date(dueDate)) === false) {
+        response.status(400);
+        response.send("Invalid Due Date");
+      }
       updatedKey = "Due Date";
       break;
   }
